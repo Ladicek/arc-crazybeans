@@ -1,10 +1,9 @@
 package io.quarkus.arc.crazybeans;
 
 import io.quarkus.arc.ArcInvocationContext;
-
-import javax.annotation.Priority;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptor;
+import jakarta.annotation.Priority;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.Interceptor;
 
 @MyInterceptorBinding
 @Interceptor

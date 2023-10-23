@@ -1,12 +1,11 @@
 package io.quarkus.arc.crazybeans.app.pkg6;
 
-import javax.inject.Singleton;
-
-import javax.enterprise.event.Observes;
 import io.quarkus.arc.Unremovable;
 import io.quarkus.arc.crazybeans.MyInterceptorBinding;
 import io.quarkus.arc.crazybeans.MySimpleAnnotation;
 import io.quarkus.runtime.StartupEvent;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Singleton;
 
 @Singleton
 @Unremovable
