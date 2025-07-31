@@ -7,45 +7,64 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Generator {
-    private static final String TEMPLATE = "package io.quarkus.arc.crazybeans.app.%s;\n"
-            + "\n"
-            + "import io.quarkus.arc.Unremovable;\n"
-            + "import io.quarkus.arc.crazybeans.MyInterceptorBinding;\n"
-            + "import io.quarkus.arc.crazybeans.MySimpleAnnotation;\n"
-            + "import io.quarkus.runtime.StartupEvent;\n"
-            + "import jakarta.enterprise.event.Observes;\n"
-            + "import jakarta.inject.Singleton;\n"
-            + "\n"
-            + "@Singleton\n"
-            + "@Unremovable\n"
-            + "public class AppBean%s {\n"
-            + "    public void init(@Observes StartupEvent ignored) {\n"
-            + "        this.ping();\n"
-            + "        this.pong();\n"
-            + "        this.hello();\n"
-            + "        this.bye();\n"
-            + "    }\n"
-            + "\n"
-            + "    @MyInterceptorBinding\n"
-            + "    @MySimpleAnnotation(\"foo\")\n"
-            + "    public void ping() {\n"
-            + "    }\n"
-            + "\n"
-            + "    @MyInterceptorBinding\n"
-            + "    @MySimpleAnnotation(\"bar\")\n"
-            + "    public void pong() {\n"
-            + "    }\n"
-            + "\n"
-            + "    @MyInterceptorBinding\n"
-            + "    @MySimpleAnnotation(\"baz\")\n"
-            + "    public void hello() {\n"
-            + "    }\n"
-            + "\n"
-            + "    @MyInterceptorBinding\n"
-            + "    @MySimpleAnnotation(\"quux\")\n"
-            + "    public void bye() {\n"
-            + "    }\n"
-            + "}\n";
+    // template parameters:
+    // 1. package name (`pkgN`)
+    // 2. bean scope (`Singleton` or `ApplicationScoped`)
+    // 3. order number (`N`)
+    // 4. order number (`N`)
+    private static final String TEMPLATE = """
+            package io.quarkus.arc.crazybeans.app.%s;
+
+            import io.quarkus.arc.Unremovable;
+            import io.quarkus.arc.crazybeans.MyDependency;
+            import io.quarkus.arc.crazybeans.MyInterceptorBinding;
+            import io.quarkus.arc.crazybeans.MySimpleAnnotation;
+            import io.quarkus.runtime.StartupEvent;
+            import io.smallrye.common.annotation.Identifier;
+            import jakarta.enterprise.context.ApplicationScoped;
+            import jakarta.enterprise.context.Dependent;
+            import jakarta.enterprise.inject.Produces;
+            import jakarta.enterprise.event.Observes;
+            import jakarta.inject.Singleton;
+
+            @%s
+            @Unremovable
+            public class AppBean%s {
+                public void init(@Observes StartupEvent ignored) {
+                    this.ping();
+                    this.pong();
+                    this.hello();
+                    this.bye();
+                }
+
+                @Produces
+                @Dependent
+                @Identifier("dep%s")
+                public MyDependency produce() {
+                    return new MyDependency();
+                }
+
+                @MyInterceptorBinding
+                @MySimpleAnnotation("foo")
+                public void ping() {
+                }
+
+                @MyInterceptorBinding
+                @MySimpleAnnotation("bar")
+                public void pong() {
+                }
+
+                @MyInterceptorBinding
+                @MySimpleAnnotation("baz")
+                public void hello() {
+                }
+
+                @MyInterceptorBinding
+                @MySimpleAnnotation("quux")
+                public void bye() {
+                }
+            }
+            """;
 
     public static void main(String[] args) throws IOException {
         int totalCount = 500;
@@ -56,12 +75,13 @@ public class Generator {
         }
         outputDir.mkdirs();
         for (int i = 0; i < totalCount; i++) {
+            String scope = i % 2 == 0 ? "Singleton" : "ApplicationScoped";
             int pkg = i / perPackageCount;
             String pkgName = "pkg" + pkg;
             File pkgDir = new File(outputDir, pkgName);
             pkgDir.mkdirs();
             Path path = new File(pkgDir, "AppBean" + i + ".java").toPath();
-            Files.write(path, String.format(TEMPLATE, pkgName, i).getBytes(StandardCharsets.UTF_8));
+            Files.writeString(path, String.format(TEMPLATE, pkgName, scope, i, i));
         }
     }
 }

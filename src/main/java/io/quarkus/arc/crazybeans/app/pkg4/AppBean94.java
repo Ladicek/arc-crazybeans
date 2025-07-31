@@ -1,9 +1,14 @@
 package io.quarkus.arc.crazybeans.app.pkg4;
 
 import io.quarkus.arc.Unremovable;
+import io.quarkus.arc.crazybeans.MyDependency;
 import io.quarkus.arc.crazybeans.MyInterceptorBinding;
 import io.quarkus.arc.crazybeans.MySimpleAnnotation;
 import io.quarkus.runtime.StartupEvent;
+import io.smallrye.common.annotation.Identifier;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Produces;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Singleton;
 
@@ -15,6 +20,13 @@ public class AppBean94 {
         this.pong();
         this.hello();
         this.bye();
+    }
+
+    @Produces
+    @Dependent
+    @Identifier("dep94")
+    public MyDependency produce() {
+        return new MyDependency();
     }
 
     @MyInterceptorBinding
