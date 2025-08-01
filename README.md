@@ -30,3 +30,19 @@ mvn clean verify -Dit.test=JvmRssMeasurement
 ```bash
 mvn clean verify -Dnative -Dit.test=NativeRssMeasurement
 ```
+
+## Build Time
+
+To measure build time, these steps are followed:
+
+1. Take current timestamp (`start`)
+2. Index the application classes with Jandex
+3. Run the ArC build process (crete the `BeanProcessor` and call `process()`)
+4. Take current timestamp (`end`)
+5. Report `end - start`
+
+Note that the generated files are _not_ written to disk; they are only kept in memory.
+
+```bash
+mvn clean verify -Dit.test=ArcBuildTimeMeasurement
+```
