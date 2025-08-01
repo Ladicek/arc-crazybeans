@@ -1,8 +1,16 @@
 # ArC CrazyBeans
 
-Attempt to measure ArC memory footprint with a significant number of beans.
-   
-To measure average RSS usage, these steps are followed repeatedly:
+Attempt to measure certain ArC performance characteristics with a significant number of beans.
+
+By default, each measurement is repeated 100 times.
+After that, the mean, standard deviation, median and 99th percentile are reported.
+
+To change the number of repetitions, set the system property `measurements`.
+For example: `-Dmeasurements=5` to only repeat the measurements 5 times.
+
+## Memory Footprint
+
+To measure RSS usage, these steps are followed:
 
 1. Start the Quarkus application
 2. Measure its RSS by reading `/proc/$PID/smaps_rollup`
@@ -11,24 +19,14 @@ To measure average RSS usage, these steps are followed repeatedly:
 5. Kill the Quarkus application
 6. Report the last measured value
 
-By default, these steps are repeated 100 times.
-After that, the mean and standard deviation are reported.
-
-To change the number of repetitions, set the system property `measurements`.
-For example: `-Dmeasurements=5` to only repeat the steps above 5 times.
-
-## JVM
+### JVM
          
 ```bash
-mvn clean package
-
-java -cp target/test-classes/ io.quarkus.arc.crazybeans.test.JvmRssMeasurement
+mvn clean verify -Dit.test=JvmRssMeasurement
 ```
 
-## Native
+### Native
 
 ```bash
-mvn clean package -Dnative
-
-java -cp target/test-classes/ io.quarkus.arc.crazybeans.test.NativeRssMeasurement
+mvn clean verify -Dnative -Dit.test=NativeRssMeasurement
 ```

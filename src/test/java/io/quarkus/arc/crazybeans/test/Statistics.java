@@ -14,19 +14,8 @@ public class Statistics {
         this.p99 = p99;
     }
 
-    public double mean() {
-        return mean;
-    }
-
-    public double stddev() {
-        return stddev;
-    }
-
-    public int median() {
-        return median;
-    }
-
-    public int p99() {
-        return p99;
+    public String format(String unit) {
+        return String.format("%.3f ± %.3f %s (median %d %s, p99 %d %s)",
+                mean, stddev, unit, median, unit, p99, unit);
     }
 }

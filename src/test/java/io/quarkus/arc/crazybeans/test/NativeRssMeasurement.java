@@ -1,11 +1,20 @@
 package io.quarkus.arc.crazybeans.test;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.function.Supplier;
 
-public class NativeRssMeasurement {
-    public static void main(String[] args) throws IOException, InterruptedException {
-        new Measurement(NativeRssMeasurement::startMeasuredProcess).run();
+public class NativeRssMeasurement extends RssMeasurement {
+    @Test
+    public void test() throws Exception {
+        Statistics stats = new NativeRssMeasurement().run();
+        System.out.println("RSS: " + stats.format("kB"));
+    }
+
+    public NativeRssMeasurement() {
+        super(NativeRssMeasurement::startMeasuredProcess);
     }
 
     private static Process startMeasuredProcess() {
