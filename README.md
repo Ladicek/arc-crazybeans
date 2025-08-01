@@ -3,7 +3,7 @@
 Attempt to measure certain ArC performance characteristics with a significant number of beans.
 
 By default, each measurement is repeated 100 times.
-After that, the mean, standard deviation, median and 99th percentile are reported.
+After that, the mean, standard deviation, median, 90th percentile, 95th percentile, 99th percentile and maximum are reported.
 
 To change the number of repetitions, set the system property `measurements`.
 For example: `-Dmeasurements=5` to only repeat the measurements 5 times.

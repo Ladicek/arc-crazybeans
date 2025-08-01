@@ -33,9 +33,12 @@ public class StatisticsBuffer {
 
         Arrays.sort(values);
         int median = findPercentile(50);
+        int p90 = findPercentile(90);
+        int p95 = findPercentile(95);
         int p99 = findPercentile(99);
+        int max = findPercentile(100);
 
-        return new Statistics(mean, stddev, median, p99);
+        return new Statistics(mean, stddev, median, p90, p95, p99, max);
     }
 
     private double computeMean() {
