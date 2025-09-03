@@ -22,7 +22,6 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
-import org.openjdk.jmh.runner.options.ChainedOptionsBuilder;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
@@ -30,17 +29,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-public class ArcBuildTimeMeasurementJmhBenchmark {
-
-    @State(Scope.Benchmark) // one instance shared across all threads for the whole benchmark
+public class ArcBuildTimeBenchmark {
+    // one instance shared across all threads for the whole benchmark
+    @State(Scope.Benchmark)
     public static class ApplicationIndexState {
         Index applicationIndex;
 
@@ -68,7 +64,7 @@ public class ArcBuildTimeMeasurementJmhBenchmark {
     @Threads(1)
     @Warmup(iterations = 10)
     @Measurement(iterations = 10)
-    public void benchmarkArCInitialization(ApplicationIndexState applicationIndexState, Blackhole bh) throws SecurityException, IOException, ExecutionException, InterruptedException {
+    public void arcInitialization(ApplicationIndexState applicationIndexState, Blackhole bh) throws Exception {
         Index applicationIndex = applicationIndexState.applicationIndex;
         IndexView beanArchiveIndex = BeanArchives.buildImmutableBeanArchiveIndex(applicationIndex);
         BeanProcessor beanProcessor = BeanProcessor.builder()
@@ -96,10 +92,9 @@ public class ArcBuildTimeMeasurementJmhBenchmark {
 
     @Test
     public void runBenchmarks() throws RunnerException {
-        ChainedOptionsBuilder opt = new OptionsBuilder()
-                .include(this.getClass().getSimpleName() + ".*");
-
-        Options options = opt.build();
+        Options options = new OptionsBuilder()
+                .include(this.getClass().getSimpleName() + ".*")
+                .build();
         new Runner(options).run();
     }
 }
