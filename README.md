@@ -46,3 +46,26 @@ Note that the generated files are _not_ written to disk; they are only kept in m
 ```bash
 mvn clean verify -Dit.test=ArcBuildTimeMeasurement
 ```
+
+### Profiling
+
+There are 3 scripts in the root directory of this project:
+
+- `generate-alloc-profile.sh`
+- `generate-cpu-profile.sh`
+- `generate-wall-profile.sh`
+
+They run the `ArcBuildTimeMeasurement` test under Async Profiler.
+The `PATH_TO_ASYNC_PROFILER` environment variable must point to the Async Profiler installation directory for the scripts to work.
+Async Profiler must be at least version 4.0.
+
+### Benchmarking
+
+There's also a JMH-based benchmark of ArC build called `ArcBuildTimeBenchmark`.
+It should be used when you want to carefully compare performance between two ArC codebases (or the same ArC codebase with different dependency versions).
+The code it benchmarks is almost _but not exactly_ the same as the code measured by `ArcBuildTimeMeasurement`.
+The profiling scripts guarantee the same number of iterations, while the number of iterations in the benchmark is controlled by JMH.
+                
+```bash
+mvn clean verify -Dit.test=ArcBuildTimeBenchmark
+```
