@@ -1,5 +1,6 @@
 package io.quarkus.arc.crazybeans.test;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -34,6 +35,16 @@ public class RssMeasurement extends Measurement {
 
         int result = buffer.getStableValue();
         System.out.println(result + " kB (in " + (end - start) + " millis)");
+
+        Process jcmd = new ProcessBuilder("jcmd", "" + process.pid(), "VM.native_memory")
+                .redirectOutput(ProcessBuilder.Redirect.to(new File("nmt.txt")))
+                .start();
+        jcmd.waitFor();
+
+        jcmd = new ProcessBuilder("jcmd", "" + process.pid(), "VM.class_hierarchy")
+                .redirectOutput(ProcessBuilder.Redirect.to(new File("classes-jcmd.txt")))
+                .start();
+        jcmd.waitFor();
 
         process.destroy();
         process.waitFor();

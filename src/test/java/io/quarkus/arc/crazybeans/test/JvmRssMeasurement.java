@@ -19,7 +19,15 @@ public class JvmRssMeasurement extends RssMeasurement {
 
     private static Process startMeasuredProcess() {
         try {
-            return new ProcessBuilder("java", "-jar", "target/quarkus-app/quarkus-run.jar").start();
+            return new ProcessBuilder("java",
+                    "-Xlog:class+load=info,class+unload=info,class+init=info:file=classes-log.txt:tid,level,tags:filecount=0",
+                    "-Xint",
+                    "-XX:+UnlockExperimentalVMOptions",
+                    "-XX:+UseEpsilonGC",
+                    "-XX:NativeMemoryTracking=summary",
+                    "-XX:-ClassUnloading",
+                    "-jar",
+                    "target/quarkus-app/quarkus-run.jar").start();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
