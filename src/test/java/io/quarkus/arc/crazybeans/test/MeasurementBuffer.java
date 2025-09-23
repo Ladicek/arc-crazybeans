@@ -1,10 +1,20 @@
 package io.quarkus.arc.crazybeans.test;
 
+import java.util.Objects;
+
 public class MeasurementBuffer {
+    private final IntToIntFunction stabilityRounding;
     private final int[] measurements;
     private int index;
 
     public MeasurementBuffer(int size) {
+        stabilityRounding = IntToIntFunction.identity();
+        measurements = new int[size];
+        index = 0;
+    }
+
+    public MeasurementBuffer(int size, IntToIntFunction stabilityRounding) {
+        this.stabilityRounding = Objects.requireNonNull(stabilityRounding);
         measurements = new int[size];
         index = 0;
     }
@@ -15,13 +25,13 @@ public class MeasurementBuffer {
     }
 
     public boolean isStable() {
-        int first = measurements[0];
+        int first = stabilityRounding.apply(measurements[0]);
         if (first == 0) {
             return false;
         }
 
         for (int i = 1; i < measurements.length; i++) {
-            if (measurements[i] != first) {
+            if (stabilityRounding.apply(measurements[i]) != first) {
                 return false;
             }
         }

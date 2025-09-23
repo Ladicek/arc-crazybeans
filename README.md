@@ -10,6 +10,8 @@ For example: `-Dmeasurements=5` to only repeat the measurements 5 times.
 
 ## Memory Footprint
 
+### RSS
+
 To measure RSS usage, these steps are followed:
 
 1. Start the Quarkus application
@@ -19,16 +21,36 @@ To measure RSS usage, these steps are followed:
 5. Kill the Quarkus application
 6. Report the last measured value
 
-### JVM
+#### JVM
          
 ```bash
 mvn clean verify -Dit.test=JvmRssMeasurement
 ```
 
-### Native
+#### Native
 
 ```bash
 mvn clean verify -Dnative -Dit.test=NativeRssMeasurement
+```
+
+### Java heap and non-heap
+
+To measure Java heap/non-heap usage, these steps are followed:
+
+1. Start the Quarkus application
+2. Connect to it over JMX and obtain the `MemoryMXBean` at `java.lang:type=Memory`
+3. Initiate GC by calling `gc()`
+4. Measure heap usage by calling `getHeapMemoryUsage().getUsed()`
+5. Measure non-heap usage by calling `getNonHeapMemoryUsage().getUsed()`
+6. Sleep 100 millis
+7. Go back to step 3, until 10 subsequent measurements are identical (on the granularity of 1/4 MB, to not take too much time)
+8. Kill the Quarkus application
+9. Report the last measured value
+
+#### JVM
+
+```bash
+mvn clean verify -Dit.test=JvmHeapMeasurement
 ```
 
 ## Build Time
