@@ -11,9 +11,8 @@ public class Generator {
     // 1. package name (`pkgN`)
     // 2. bean scope (`Singleton` or `ApplicationScoped`)
     // 3. order number (`N`)
-    // 4. order number (`N`)
     private static final String TEMPLATE = """
-            package io.quarkus.arc.crazybeans.app.%s;
+            package io.quarkus.arc.crazybeans.app.%1$s;
 
             import io.quarkus.arc.Unremovable;
             import io.quarkus.arc.crazybeans.MyDependency;
@@ -21,16 +20,17 @@ public class Generator {
             import io.quarkus.arc.crazybeans.MySimpleAnnotation;
             import io.quarkus.runtime.StartupEvent;
             import io.smallrye.common.annotation.Identifier;
+            import jakarta.annotation.Priority;
             import jakarta.enterprise.context.ApplicationScoped;
             import jakarta.enterprise.context.Dependent;
             import jakarta.enterprise.inject.Produces;
             import jakarta.enterprise.event.Observes;
             import jakarta.inject.Singleton;
 
-            @%s
+            @%2$s
             @Unremovable
-            public class AppBean%s {
-                public void init(@Observes StartupEvent ignored) {
+            public class AppBean%3$s {
+                public void init(@Observes @Priority(%3$s) StartupEvent ignored) {
                     this.ping();
                     this.pong();
                     this.hello();
@@ -39,7 +39,7 @@ public class Generator {
 
                 @Produces
                 @Dependent
-                @Identifier("dep%s")
+                @Identifier("dep%3$s")
                 public MyDependency produce() {
                     return new MyDependency();
                 }
@@ -81,7 +81,7 @@ public class Generator {
             File pkgDir = new File(outputDir, pkgName);
             pkgDir.mkdirs();
             Path path = new File(pkgDir, "AppBean" + i + ".java").toPath();
-            Files.writeString(path, String.format(TEMPLATE, pkgName, scope, i, i));
+            Files.writeString(path, String.format(TEMPLATE, pkgName, scope, i));
         }
     }
 }

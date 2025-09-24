@@ -6,6 +6,7 @@ import io.quarkus.arc.crazybeans.MyInterceptorBinding;
 import io.quarkus.arc.crazybeans.MySimpleAnnotation;
 import io.quarkus.runtime.StartupEvent;
 import io.smallrye.common.annotation.Identifier;
+import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Produces;
@@ -15,7 +16,7 @@ import jakarta.inject.Singleton;
 @Singleton
 @Unremovable
 public class AppBean58 {
-    public void init(@Observes StartupEvent ignored) {
+    public void init(@Observes @Priority(58) StartupEvent ignored) {
         this.ping();
         this.pong();
         this.hello();
