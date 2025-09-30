@@ -2,17 +2,21 @@ package io.quarkus.arc.crazybeans.generator;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class Generator {
     // template parameters:
-    // 1. package name (`pkgN`)
+    // 1. package order number (`N`)
     // 2. bean scope (`Singleton` or `ApplicationScoped`)
-    // 3. order number (`N`)
-    private static final String TEMPLATE = """
-            package io.quarkus.arc.crazybeans.app.%1$s;
+    // 3. class order number (`N`)
+    private static final String BEAN_TEMPLATE = """
+            package io.quarkus.arc.crazybeans.app.pkg%1$s;
 
             import io.quarkus.arc.Unremovable;
             import io.quarkus.arc.crazybeans.MyDependency;
@@ -63,6 +67,35 @@ public class Generator {
                 @MySimpleAnnotation("quux")
                 public void bye() {
                 }
+
+                public String toString() {
+                    return this.getClass().getName();
+                }
+            }
+            """;
+
+    // template parameters:
+    // 1. package order number (`N`)
+    // 2. injections (`@Inject AppBean1 appbean1; ...`)
+    // 3. calls (`appbean1.toString(); ...`)
+    private static final String CLIENT_TEMPLATE = """
+            package io.quarkus.arc.crazybeans.app.pkg%1$s;
+
+            import io.quarkus.arc.Unremovable;
+            import io.quarkus.runtime.StartupEvent;
+            import jakarta.annotation.Priority;
+            import jakarta.enterprise.event.Observes;
+            import jakarta.inject.Inject;
+            import jakarta.inject.Singleton;
+
+            @Singleton
+            @Unremovable
+            public class Client%1$s {
+            %2$s
+
+                public void trigger(@Observes @Priority(1_000_000 + %1$s) StartupEvent ignored) {
+            %3$s
+                }
             }
             """;
 
@@ -74,14 +107,32 @@ public class Generator {
             Files.walk(outputDir.toPath()).map(Path::toFile).forEach(File::delete);
         }
         outputDir.mkdirs();
+        Map<Integer, List<String>> classesByPackage = new HashMap<>();
         for (int i = 0; i < totalCount; i++) {
             String scope = i % 2 == 0 ? "Singleton" : "ApplicationScoped";
             int pkg = i / perPackageCount;
-            String pkgName = "pkg" + pkg;
-            File pkgDir = new File(outputDir, pkgName);
+            File pkgDir = new File(outputDir, "pkg" + pkg);
             pkgDir.mkdirs();
-            Path path = new File(pkgDir, "AppBean" + i + ".java").toPath();
-            Files.writeString(path, String.format(TEMPLATE, pkgName, scope, i));
+            String className = "AppBean" + i;
+            classesByPackage.computeIfAbsent(pkg, ignored -> new ArrayList<>()).add(className);
+            Path path = new File(pkgDir, className + ".java").toPath();
+            Files.writeString(path, String.format(BEAN_TEMPLATE, pkg, scope, i));
+        }
+        for (Map.Entry<Integer, List<String>> entry : classesByPackage.entrySet()) {
+            Integer pkg = entry.getKey();
+            List<String> classes = entry.getValue();
+
+            StringBuilder injections = new StringBuilder();
+            StringBuilder calls = new StringBuilder();
+            for (String className : classes) {
+                String field = className.toLowerCase(Locale.ROOT);
+                injections.append("    @Inject ").append(className).append(" ").append(field).append(";\n");
+                calls.append("        System.out.println(").append(field).append(".getClass().getName() + \" | \" + ")
+                        .append(field).append(".toString());\n");
+            }
+            File pkgDir = new File(outputDir, "pkg" + pkg);
+            Path path = new File(pkgDir, "Client" + pkg + ".java").toPath();
+            Files.writeString(path, String.format(CLIENT_TEMPLATE, pkg, injections, calls));
         }
     }
 }

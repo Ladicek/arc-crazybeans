@@ -49,4 +49,8 @@ public class AppBean435 {
     @MySimpleAnnotation("quux")
     public void bye() {
     }
+
+    public String toString() {
+        return this.getClass().getName();
+    }
 }
