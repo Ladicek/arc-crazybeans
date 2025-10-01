@@ -19,7 +19,10 @@ public class JvmHeapMeasurement extends HeapMeasurement {
 
     private static Process startMeasuredProcess() {
         try {
-            return new ProcessBuilder("java", "-jar", "target/quarkus-app/quarkus-run.jar").start();
+            return new ProcessBuilder("java", "-jar", "target/quarkus-app/quarkus-run.jar")
+                    .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+                    .redirectError(ProcessBuilder.Redirect.DISCARD)
+                    .start();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
