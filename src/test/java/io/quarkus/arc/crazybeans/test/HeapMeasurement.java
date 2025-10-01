@@ -1,16 +1,13 @@
 package io.quarkus.arc.crazybeans.test;
 
-import com.sun.tools.attach.AttachNotSupportedException;
 import com.sun.tools.attach.VirtualMachine;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
-import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class HeapMeasurement extends MultiMeasurement {

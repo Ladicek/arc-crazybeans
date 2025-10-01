@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.function.Supplier;
 
 public class JvmRssMeasurement extends RssMeasurement {
     @Test
