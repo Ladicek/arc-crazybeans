@@ -18,7 +18,7 @@ public class NativeRssMeasurement extends RssMeasurement {
 
     private static Process startMeasuredProcess() {
         try {
-            return new ProcessBuilder("target/arc-crazybeans-1.0-runner")
+            return new ProcessBuilder("target/arc-crazybeans-1.0-runner", "-Xmx100m")
                     .redirectOutput(ProcessBuilder.Redirect.DISCARD)
                     .redirectError(ProcessBuilder.Redirect.DISCARD)
                     .start();
