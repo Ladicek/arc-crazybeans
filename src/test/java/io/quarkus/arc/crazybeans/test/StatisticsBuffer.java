@@ -8,8 +8,8 @@ public class StatisticsBuffer {
     private int index;
 
     public StatisticsBuffer(int count) {
-        if (count <= 1) {
-            throw new IllegalArgumentException();
+        if (count < 1) {
+            throw new IllegalArgumentException("At least 1 measurement is required");
         }
 
         this.count = count;
@@ -50,6 +50,10 @@ public class StatisticsBuffer {
     }
 
     private double computeStddev(double mean) {
+        if (count == 1) {
+            return 0.0;
+        }
+
         double sumOfSquaredDifferences = 0;
         for (int i = 0; i < count; i++) {
             sumOfSquaredDifferences += Math.pow(values[i] - mean, 2);
